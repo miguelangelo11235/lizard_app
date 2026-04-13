@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Lagartija Run — Un endless runner 16-bit con pixel art, música procedural y efectos retro CRT.">
+  <title>Lagartija Run — 16-bit Edition</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       Pantalla de Inicio
+       ═══════════════════════════════════════════ -->
+  <div id="screen-intro" class="screen">
+    <div id="stars-container"></div>
+    <h1 id="logo-title">LAGARTIJA RUN</h1>
+    <p class="subtitle">El endless runner más escamoso del oeste</p>
+
+    <ul class="instructions">
+      <li>ESPACIO / Tap = saltar</li>
+      <li>Doble salto disponible</li>
+      <li>Recoge moscas para sumar puntos</li>
+      <li>Evita las piedras (3 vidas)</li>
+    </ul>
+
+    <button id="btn-start" class="btn-pixel">▶ INICIAR</button>
+    <button id="btn-leaderboard" class="btn-pixel">🏆 MEJORES PUNTAJES</button>
+    <button id="btn-daily" class="btn-pixel">📅 RETO DEL DÍA</button>
+
+    <label class="audio-toggle">
+      <input type="checkbox" id="toggle-audio" checked>
+      <span>🔊 Sonido</span>
+    </label>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       Pantalla de Juego
+       ═══════════════════════════════════════════ -->
+  <div id="screen-game" class="screen hidden">
+    <div id="game-wrapper">
+      <canvas id="gameCanvas" width="800" height="300">
+        Juego Lagartija Run
+      </canvas>
+
+      <div id="hud">
+        <div id="score-display">PUNTOS: 00000</div>
+        <div id="hearts-display">
+          <span class="heart">♥</span>
+          <span class="heart">♥</span>
+          <span class="heart">♥</span>
+        </div>
+        <div id="speed-display">VEL x1.0</div>
+        <div id="combo-display">COMBO x1.5!</div>
+        <div id="powerup-display"></div>
+        <div id="level-display">NIV 1</div>
+      </div>
+
+      <button id="btn-pause">⏸ PAUSA</button>
+
+      <div id="pause-overlay" class="hidden">⏸ PAUSA</div>
+
+      <div id="arcade-messages"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       Pantalla Game Over
+       ═══════════════════════════════════════════ -->
+  <div id="screen-gameover" class="screen hidden">
+    <h2 id="gameover-title">GAME OVER</h2>
+    <div id="final-score-display">PUNTAJE: 00000</div>
+
+    <div id="game-stats">
+      <span id="stat-flies">Moscas: 0</span>
+      <span id="stat-distance">Distancia: 0m</span>
+      <span id="stat-powerups">Power-ups: 0</span>
+      <span id="stat-level">Nivel máximo: 0</span>
+    </div>
+
+    <div id="save-score-section" style="display:none;">
+      <p>¡Entraste al top 10! Ingresa tu nombre:</p>
+      <input type="text" id="input-player-name" maxlength="10"
+             placeholder="TU NOMBRE" autocomplete="off">
+      <br>
+      <button id="btn-save-score" class="btn-pixel">💾 GUARDAR</button>
+    </div>
+
+    <p id="already-saved">✓ Puntaje guardado</p>
+
+    <button id="btn-retry" class="btn-pixel">🔄 JUGAR DE NUEVO</button>
+    <button id="btn-see-scores" class="btn-pixel">🏆 VER PUNTAJES</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       Pantalla Leaderboard
+       ═══════════════════════════════════════════ -->
+  <div id="screen-leaderboard" class="screen hidden">
+    <h2>🏆 HALL OF FAME</h2>
+
+    <table id="table-scores">
+      <thead>
+        <tr>
+          <th>POS</th>
+          <th>NOMBRE</th>
+          <th>PUNTOS</th>
+          <th>FECHA</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <p id="no-scores">Aún no hay puntajes. ¡Sé el primero!</p>
+
+    <div id="leaderboard-stats"></div>
+
+    <button id="btn-back-intro" class="btn-pixel">← VOLVER</button>
+    <button id="btn-clear-scores" class="btn-pixel">🗑 BORRAR REGISTROS</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       Pantalla Reto Diario
+       ═══════════════════════════════════════════ -->
+  <div id="screen-daily" class="screen hidden">
+    <h2>📅 RETO DEL DÍA</h2>
+
+    <div id="daily-info">
+      <p id="daily-type"></p>
+      <p id="daily-description"></p>
+
+      <div id="daily-progress-bar">
+        <div id="daily-progress-fill"></div>
+      </div>
+
+      <p id="daily-progress-text">0 / META</p>
+      <p id="daily-reward">Recompensa: +500 puntos bonus</p>
+      <p id="daily-status">Pendiente</p>
+    </div>
+
+    <div id="daily-history"></div>
+
+    <button id="btn-play-daily" class="btn-pixel">▶ JUGAR RETO</button>
+    <button id="btn-back-from-daily" class="btn-pixel">← VOLVER</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       Overlay CRT (siempre visible)
+       ═══════════════════════════════════════════ -->
+  <div id="crt-overlay"></div>
+
+  <!-- ═══════════════════════════════════════════
+       Scripts (orden crítico con defer)
+       ═══════════════════════════════════════════ -->
+  <script src="js/config.js" defer></script>
+  <script src="js/sprites.js" defer></script>
+  <script src="js/entities.js" defer></script>
+  <script src="js/audio.js" defer></script>
+  <script src="js/effects.js" defer></script>
+  <script src="js/storage.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/game.js" defer></script>
+</body>
+</html>

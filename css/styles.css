@@ -1,0 +1,560 @@
+/* ═══════════════════════════════════════════════════════════════
+   styles.css — Estilos del juego Lagartija Run 16-bit Edition
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* ── Reset global ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #0a0a1a;
+  color: #ffffff;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* ── Variables CSS ── */
+:root {
+  --c-green:   #3ddc84;
+  --c-yellow:  #ffe600;
+  --c-red:     #ff3333;
+  --c-blue:    #4fc3f7;
+  --c-orange:  #ff9800;
+  --c-purple:  #ce93d8;
+  --c-dark:    #0a0a1a;
+  --c-pixel:   #1a1a2e;
+  --c-border:  #2a2a4e;
+  --c-gold:    #ffd700;
+  --c-silver:  #c0c0c0;
+  --c-bronze:  #cd7f32;
+}
+
+/* ═══════════════════════════════════════════
+   Pantallas (contenedores full-screen)
+   ═══════════════════════════════════════════ */
+.screen {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════
+   Pantalla de inicio
+   ═══════════════════════════════════════════ */
+#screen-intro {
+  position: relative;
+  overflow: hidden;
+}
+
+#stars-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  animation: starBlink 2s ease-in-out infinite;
+}
+
+#screen-intro > *:not(#stars-container) {
+  position: relative;
+  z-index: 1;
+}
+
+#logo-title {
+  font-size: clamp(1.2rem, 4vw, 2.2rem);
+  color: var(--c-green);
+  text-shadow: 3px 3px 0 #000, -1px -1px 0 #000,
+               1px -1px 0 #000, -1px 1px 0 #000;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+#screen-intro .subtitle {
+  font-size: 0.5rem;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+#screen-intro .instructions {
+  font-size: 0.45rem;
+  text-align: left;
+  line-height: 2.2;
+  color: #ccc;
+  list-style: none;
+  margin-bottom: 0.5rem;
+}
+
+#screen-intro .instructions li::before {
+  content: '› ';
+  color: var(--c-green);
+  font-weight: bold;
+}
+
+/* ── Botones pixel-art ── */
+.btn-pixel {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.5rem;
+  border: 3px solid var(--c-green);
+  border-radius: 0;
+  background: var(--c-pixel);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.1s;
+  margin: 0.3rem;
+  text-decoration: none;
+}
+
+.btn-pixel:hover {
+  background: var(--c-green);
+  color: #000;
+  transform: scale(1.05);
+}
+
+.btn-pixel:active {
+  transform: scale(0.97);
+}
+
+/* Toggle audio */
+.audio-toggle {
+  font-size: 0.45rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.audio-toggle input {
+  cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════
+   Canvas y contenedor del juego
+   ═══════════════════════════════════════════ */
+#game-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  margin: auto;
+}
+
+#gameCanvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  max-width: 100%;
+  height: auto;
+  border-top: 3px solid var(--c-green);
+  border-bottom: 3px solid var(--c-green);
+}
+
+/* ═══════════════════════════════════════════
+   HUD (superpuesto al canvas)
+   ═══════════════════════════════════════════ */
+#hud {
+  position: absolute;
+  top: 6px; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  pointer-events: none;
+  z-index: 10;
+  font-size: clamp(7px, 1.5vw, 10px);
+}
+
+#score-display {
+  color: var(--c-yellow);
+}
+
+#hearts-display .heart {
+  color: var(--c-red);
+  margin: 0 2px;
+}
+
+#hearts-display .heart.empty {
+  color: #444;
+}
+
+#speed-display {
+  color: #999;
+  font-size: 0.85em;
+}
+
+#combo-display {
+  color: var(--c-purple);
+  display: none;
+}
+
+#combo-display.active {
+  display: block;
+  animation: heartbeat 0.5s infinite;
+}
+
+#powerup-display {
+  color: var(--c-orange);
+  display: none;
+}
+
+#level-display {
+  color: #ccc;
+}
+
+/* Botón de pausa */
+#btn-pause {
+  position: absolute;
+  top: 4px; right: 8px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.4rem;
+  border: 2px solid #444;
+  padding: 4px 8px;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  z-index: 20;
+  pointer-events: all;
+}
+
+#btn-pause:hover {
+  border-color: var(--c-green);
+  color: var(--c-green);
+}
+
+/* Overlay de pausa */
+#pause-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--c-yellow);
+  z-index: 15;
+  animation: blink 1s infinite;
+}
+
+/* Contenedor de mensajes arcade */
+#arcade-messages {
+  position: absolute;
+  top: 30px; left: 0; right: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* ═══════════════════════════════════════════
+   Pantalla Game Over
+   ═══════════════════════════════════════════ */
+#gameover-title {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  color: var(--c-red);
+  animation: shake 0.4s ease, fadeIn 0.3s ease;
+}
+
+#final-score-display {
+  font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+  color: var(--c-yellow);
+}
+
+#game-stats {
+  background: var(--c-pixel);
+  border: 2px solid var(--c-border);
+  padding: 1rem;
+  font-size: 0.45rem;
+  line-height: 2.5;
+  margin: 0.8rem 0;
+}
+
+#game-stats span {
+  display: block;
+  color: #ccc;
+}
+
+#save-score-section {
+  border: 2px solid var(--c-green);
+  padding: 1rem;
+  background: rgba(61,220,132,0.05);
+  margin: 0.5rem 0;
+}
+
+#save-score-section p {
+  font-size: 0.4rem;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+#input-player-name {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6rem;
+  background: #000;
+  color: var(--c-green);
+  border: 2px solid var(--c-green);
+  padding: 0.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  width: 200px;
+  outline: none;
+  margin-bottom: 0.5rem;
+}
+
+#input-player-name:focus {
+  border-color: var(--c-yellow);
+  box-shadow: 0 0 8px var(--c-yellow);
+}
+
+#already-saved {
+  color: var(--c-green);
+  font-size: 0.45rem;
+  display: none;
+}
+
+/* ═══════════════════════════════════════════
+   Tabla Leaderboard
+   ═══════════════════════════════════════════ */
+#table-scores {
+  width: 100%;
+  max-width: 500px;
+  border-collapse: collapse;
+  font-size: 0.4rem;
+  margin: 0.5rem auto;
+}
+
+#table-scores th {
+  background: var(--c-pixel);
+  padding: 0.6rem;
+  border-bottom: 2px solid var(--c-green);
+  color: var(--c-green);
+  text-align: left;
+}
+
+#table-scores td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--c-border);
+}
+
+#table-scores tr:nth-child(even) {
+  background: rgba(255,255,255,0.03);
+}
+
+#table-scores tbody tr:nth-child(1) td { color: var(--c-gold); }
+#table-scores tbody tr:nth-child(2) td { color: var(--c-silver); }
+#table-scores tbody tr:nth-child(3) td { color: var(--c-bronze); }
+
+#no-scores {
+  color: #888;
+  font-size: 0.4rem;
+}
+
+#leaderboard-stats {
+  font-size: 0.35rem;
+  color: #888;
+  margin-top: 0.5rem;
+  line-height: 2;
+}
+
+#leaderboard-stats span {
+  display: block;
+}
+
+/* ═══════════════════════════════════════════
+   Pantalla de reto diario
+   ═══════════════════════════════════════════ */
+#daily-info {
+  max-width: 400px;
+  text-align: center;
+}
+
+#daily-type {
+  font-size: 0.6rem;
+  color: var(--c-yellow);
+  margin-bottom: 0.5rem;
+}
+
+#daily-description {
+  font-size: 0.4rem;
+  color: #ccc;
+  margin-bottom: 0.5rem;
+}
+
+#daily-progress-bar {
+  width: 100%;
+  height: 20px;
+  background: var(--c-pixel);
+  border: 2px solid var(--c-border);
+  margin: 0.5rem 0;
+  overflow: hidden;
+}
+
+#daily-progress-fill {
+  height: 100%;
+  background: var(--c-green);
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+#daily-progress-text {
+  font-size: 0.4rem;
+  color: #ccc;
+}
+
+#daily-reward {
+  font-size: 0.35rem;
+  color: var(--c-gold);
+  margin: 0.3rem 0;
+}
+
+#daily-status {
+  font-size: 0.45rem;
+  color: #aaa;
+}
+
+#daily-status.completed {
+  color: var(--c-gold);
+}
+
+#daily-history {
+  font-size: 0.35rem;
+  line-height: 2;
+  color: #888;
+  margin-top: 0.5rem;
+  max-width: 400px;
+  text-align: left;
+}
+
+/* ═══════════════════════════════════════════
+   Efecto CRT (overlay HTML, siempre visible)
+   ═══════════════════════════════════════════ */
+#crt-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  animation: crtFlicker 0.15s infinite;
+}
+
+#crt-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0,0,0,0.6) 100%
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Animaciones (@keyframes)
+   ═══════════════════════════════════════════ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  12%  { transform: translateX(-8px); }
+  25%  { transform: translateX(8px); }
+  37%  { transform: translateX(-6px); }
+  50%  { transform: translateX(6px); }
+  62%  { transform: translateX(-4px); }
+  75%  { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.15); }
+}
+
+@keyframes crtFlicker {
+  0%   { opacity: 0.97; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.98; }
+}
+
+@keyframes starBlink {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  #logo-title {
+    font-size: 1rem;
+  }
+  .btn-pixel {
+    font-size: 0.4rem;
+    padding: 0.5rem 0.9rem;
+  }
+  #hud {
+    font-size: 7px;
+  }
+  #game-stats {
+    font-size: 0.38rem;
+  }
+  #table-scores {
+    font-size: 0.35rem;
+  }
+}
+
+@media (max-width: 400px) {
+  #logo-title {
+    font-size: 0.8rem;
+  }
+  .btn-pixel {
+    font-size: 0.35rem;
+  }
+}
